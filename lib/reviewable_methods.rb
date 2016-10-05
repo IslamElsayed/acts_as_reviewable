@@ -60,7 +60,15 @@ module RapidFire
       end # module ClassMethods
 
       module InstanceMethods
+        def total_reviews
+          self.reviews.count
+        end
 
+        def average_rating
+          (self.reviews.sum(:rating).to_f / total_reviews.to_f).round(1)
+        end
+      end # module InstanceMethods
+      
     end # module Reviewable
   end
 end
