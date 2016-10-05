@@ -25,7 +25,7 @@ The 1-5 scale is 80% of the cases, but there's no real reason or overhead to sup
 
 `gem install acts_as_reviewable`
 
-for rails 3, in your Gemfile:
+in your Gemfile:
 
 `gem 'acts_as_reviewable'`
 
@@ -75,7 +75,7 @@ end
 ## 2. Make your model reviewable:
 <pre>
 class Post &lt; ActiveRecord::Base
-   acts_as_reviewable :scale => 0..5
+   acts_as_reviewable
 end
 </pre>
 
@@ -111,6 +111,7 @@ Review.destroy_all # just in case...
 @post.total_reviews   # => 2
 @post.average_rating  # => 2.0, i.e. don't count nil (a.k.a. "no opinion")
 
+TODO:
 @post.unreview!(:by => @user)  # delete existing review (type: User) => destroy
 
 @post.total_reviews   # => 1
@@ -133,7 +134,7 @@ The *acts_as_reviewable* mixin takes the following hash arguments for customizat
 *Basic*
 
 * *:by* - the reviewer model(s), e.g. User, Account, etc. (accepts either symbol or class, i.e. *User* <=> *:user* <=> *:users*, or an array of such if there are more than one reviewer model). The reviewer model will be setup for you. Note: Polymorhic, so it accepts any model. Default: *nil*.
-* *:scale* / *:range* / *:values* - range, or array, of valid rating values. Default: *1..5*. Note: Negative values are allowed too, and a range of values are not required, i.e. [-1, 1] is valid as well as [1,3,5]. =)
+
 
 *Advanced*
 
