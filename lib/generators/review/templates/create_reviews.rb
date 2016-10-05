@@ -1,20 +1,22 @@
-class CreateReviews < ActiveRecord::Migration
-  def self.up
+class CreateReviews < ActiveRecord::Migration[5.0]
+  def up
     create_table :reviews do |t|
       t.string :title, :limit => 50, :default => ""
-      t.text :review
+      t.integer :rating
+      t.text :body
       t.references :reviewable, :polymorphic => true
-      t.references :user
+      t.references :reviewer, :polymorphic => true
       t.string :role, :default => "reviews"
       t.timestamps
     end
 
-    add_index :comments, :reviewable_type
-    add_index :comments, :reviewable_id
-    add_index :comments, :user_id
+    add_index :reviews, :reviewable_type
+    add_index :reviews, :reviewable_id
+    add_index :reviews, :reviewer_id
+    add_index :reviews, :reviewer_type
   end
 
-  def self.down
+  def down
     drop_table :reviews
   end
 end
