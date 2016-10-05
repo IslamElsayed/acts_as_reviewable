@@ -11,23 +11,24 @@ module RapidFire
 
       module ClassMethods
         def acts_as_reviewable(*args)
-          review_roles = args.to_a.flatten.compact.map(&:to_sym)
-          write_inheritable_attribute(:review_types, (review_roles.blank? ? [:reviews] : review_roles))
-          class_inheritable_reader(:review_types)
+          review_roles = [args.first[:by]].flatten.compact.map(&:to_sym) rescue []
+          review_types = review_roles.blank? ? [:reviews] : review_roles
+          class_attribute :review_types
 
           options = ((args.blank? or args[0].blank?) ? {} : args[0])
 
           if !review_roles.blank?
             review_roles.each do |role|
-              has_many "#{role.to_s}_reviews".to_sym,
-                {:class_name => "Review",
-                  :as => :reviewable,
-                  :dependent => :destroy,
-                  :conditions => ["role = ?", role.to_s],
-                  :before_add => Proc.new { |x, c| c.role = role.to_s }}
+              has_many "#{role.to_s}_reviews".to_sym, -> (object) { where("role = ?", role.to_s) }
+                 {
+                    class_name: "Review",
+                    as: :reviewable,
+                    dependent: :destroy,
+                    before_add: Proc.new { |x, c| c.role = role.to_s } 
+                 }
             end
           else
-            has_many :reviews, {:as => :reviewable, :dependent => :destroy}
+            has_many :reviews, as: :reviewable, dependent: :destroy
           end
 
           review_types.each do |role|
@@ -60,12 +61,8 @@ module RapidFire
 
       module InstanceMethods
 
-        
-      end # module InstanceMethods
-      
     end # module Reviewable
   end
 end
 
 ActiveRecord::Base.class_eval { include RapidFire::Acts::Reviewable }
-
