@@ -6,12 +6,18 @@ module ActsAsReviewable
   # recent: Returns reviews by how recently they were created (created_at DESC).
   # limit(N): Return no more than N reviews.
   module Review
-
     def self.included(review_model)
       review_model.extend Finders
-      review_model.scope :in_order, review_model.order('created_at ASC')
-      review_model.scope :recent, review_model.order('created_at DESC')
+      review_model.scope :in_order, -> { review_model.order('created_at ASC') }
+      review_model.scope :recent, -> { review_model.order('created_at DESC') }
 
+      review_model.validates :rating, numericality: {
+        only_integer: true,
+        greater_than_or_equal_to: 1,
+        less_than_or_equal_to: 5
+      }
+
+      review_model.belongs_to :owner, class_name: "User"
     end
 
     def is_review_type?(type)
