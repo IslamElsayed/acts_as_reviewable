@@ -67,6 +67,10 @@ module RapidFire
         def average_rating
           (self.reviews.sum(:rating).to_f / total_reviews.to_f).round(1)
         end
+
+        def review!(by: , rating:, body: )
+          self.reviews.where(reviewer: by, rating: rating, body: body).find_or_create
+        end
       end # module InstanceMethods
       
     end # module Reviewable
